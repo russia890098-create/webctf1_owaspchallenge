@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CouponVault | Enterprise Loyalty Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.875rem;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .stat-val {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .list-group {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .list-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .code-pill {
+            background: #f1f5f9;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo"><i class="fas fa-vault"></i> CouponVault</div>
+        <div id="nav-actions" class="hidden">
+            <span id="user-display" class="mr-4 text-sm text-gray-600"></span>
+            <button onclick="logout()" class="btn btn-secondary btn-sm">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Auth Screen -->
+        <div id="login-view" class="card" style="max-width: 400px; margin: 4rem auto;">
+            <h2>Portal Login</h2>
+            <p class="subtitle">Access the loyalty management dashboard</p>
+
+            <div id="login-error" class="alert alert-error"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="e.g. admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+            </form>
+            <div style="margin-top: 1rem; text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+                Authorized personnel only. System activity is logged.
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboard-view" class="hidden">
+            <div class="alert alert-success" id="dash-success"></div>
+            <div class="alert alert-error" id="dash-error"></div>
+
+            <div class="dashboard-grid">
+                <!-- Balance Card -->
+                <div class="card stat-card">
+                    <h3>Available Balance</h3>
+                    <div class="stat-val" id="balance-display">--</div>
+                    <p>Coupons Ready for Issue</p>
+                    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+                        <button onclick="refreshBalance()" class="btn"
+                            style="background: rgba(255,255,255,0.2); color: white; border: none;">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Card -->
+                <div class="card">
+                    <h2>Quick Actions</h2>
+                    <p class="subtitle">Manage loyalty program Issue</p>
+
+                    <button onclick="redeemCoupon()" class="btn btn-primary btn-full"
+                        style="margin-bottom: 1rem; justify-content: space-between;">
+                        <span>Issue New Coupon</span>
+                        <span style="opacity: 0.8; font-size: 0.8em;">100 Credits</span>
+                    </button>
+
+                    <button onclick="accessAdminPanel()" class="btn btn-secondary btn-full"
+                        style="justify-content: space-between;">
+                        <span>Admin Console</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+                        <h4 style="margin-bottom: 0.5rem; font-size: 0.9rem;">VIP Tier Status</h4>
+                        <button onclick="unlockVip()" class="btn btn-full"
+                            style="background: #1e293b; color: #fbbf24; border: none;">
+                            <i class="fas fa-crown"></i> Unlock Platinum Tier
+                        </button>
+                        <p
+                            style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">
+                            Requires 5 verified redemptions
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="card" style="margin-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2>Recent Activations</h2>
+                    <button onclick="loadHistory()" class="btn btn-secondary btn-sm">Load History</button>
+                </div>
+                <div id="history-list" class="list-group">
+                    <div class="list-item" style="justify-content: center; color: var(--text-muted);">
+                        No history loaded
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 CouponVault Inc. | <a href="#" style="color: inherit;">Privacy Policy</a> | <a href="#"
+                style="color: inherit;">Terms of Service</a></p>
+        <p style="margin-top: 0.5rem; opacity: 0.5;">v2.4.0-enterprise</p>
+    </footer>
+
+    <script>
+        let sessionToken = null;
+
+        // --- Auth Logic ---
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            try {
+                const res = await apiCall('/api/auth/login', 'POST', { username: user, password: pass });
+                sessionToken = res.token;
+                document.getElementById('user-display').textContent = `User: ${res.user.username}`;
+                toggleView('dashboard');
+                refreshBalance();
+                loadHistory();
+            } catch (err) {
+                showError('login-error', err.message);
+            }
+        });
+
+        function logout() {
+            sessionToken = null;
+            toggleView('login');
+        }
+
+        // --- Dashboard Logic ---
+        async function refreshBalance() {
+            if (!sessionToken) {
+                console.error("No session token!");
+                showError('dash-error', "Internal Error: No session token stored.");
+                return;
+            }
+            try {
+                const res = await apiCall('/api/user/balance');
+                if (res.balance !== undefined) {
+                    document.getElementById('balance-display').textContent = res.balance;
+                } else {
+                    document.getElementById('balance-display').textContent = "Err (Invalid Response)";
+                }
+            } catch (err) {
+                console.error("Balance Load Error:", err);
+                document.getElementById('balance-display').textContent = "Err";
+
+                // Detailed helpful error for user debugging
+                if (err.message.includes("401")) {
+                    showError('dash-error', "Session Invalid. Please logout and login again.");
+                } else {
+                    showError('dash-error', "Failed to load balance: " + err.message);
+                }
+            }
+        }
+
+        async function redeemCoupon() {
+            try {
+                showSuccess('dash-success', 'Processing redemption request...');
+                const res = await apiCall('/api/coupons/redeem', 'POST');
+                showSuccess('dash-success', `Coupon Issued: ${res.code}`);
+                refreshBalance();
+                loadHistory();
+            } catch (err) {
+                showError('dash-error', err.message);
+            }
+        }
+
+        async function accessAdminPanel() {
+            try {
+                const res = await apiCall('/api/admin/dashboard');
+                showSuccess('dash-success', `${res.message || 'Admin Panel Accessed'} - System Load: ${res.metrics?.system_load}`);
+            } catch (err) {
+                showError('dash-error', err.message);
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await apiCall('/api/coupons/history');
+                const container = document.getElementById('history-list');
+
+                if (res.data.length === 0) {
+                    container.innerHTML = '<div class="list-item" style="justify-content: center;">No redemptions found</div>';
+                    return;
+                }
+
+                container.innerHTML = res.data.map(item => `
+                    <div class="list-item">
+                        <span class="code-pill">${item.code}</span>
+                        <span style="font-size: 0.875rem; color: #64748b;">${new Date(item.date).toLocaleString()}</span>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.warn('Failed to load history:', err);
+            }
+        }
+
+        async function unlockVip() {
+            try {
+                // Get history first
+                const historyRes = await apiCall('/api/coupons/history');
+                const codes = historyRes.data.map(i => i.code);
+
+                if (codes.length < 5) {
+                    throw new Error(`Insufficient activity. Need 5 verified codes, found ${codes.length}.`);
+                }
+
+                const res = await apiCall('/api/vip/unlock', 'POST', { validation_codes: codes });
+                showSuccess('dash-success', `🎉 ${res.message} \n\nFLAG: ${res.flag}`);
+            } catch (err) {
+                showError('dash-error', err.message);
+            }
+        }
+
+        // --- Helpers ---
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+
+            const res = await fetch(endpoint, {
+                method,
+                headers,
+                body: body ? JSON.stringify(body) : null
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Request failed');
+            return data;
+        }
+
+        function toggleView(viewName) {
+            const login = document.getElementById('login-view');
+            const dash = document.getElementById('dashboard-view');
+            const nav = document.getElementById('nav-actions');
+
+            if (viewName === 'dashboard') {
+                login.classList.add('hidden');
+                dash.classList.remove('hidden');
+                nav.classList.remove('hidden');
+            } else {
+                login.classList.remove('hidden');
+                dash.classList.add('hidden');
+                nav.classList.add('hidden');
+            }
+        }
+
+        function showError(elId, msg) {
+            const el = document.getElementById(elId);
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function showSuccess(elId, msg) {
+            const el = document.getElementById(elId);
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+    </script>
+</body>
+
+</html>
