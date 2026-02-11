@@ -287,7 +287,7 @@ def redeem_coupon():
     
     # Simulate Payment Gateway Communication
     # Real-world APIs like Stripe/PayPal rarely respond instantly
-    gateway_latency = random.uniform(0.04, 0.08) # ~50ms average latency
+    gateway_latency = random.uniform(0.2, 0.4)  # Bigger window
     time.sleep(gateway_latency)
     
     # Process Transaction
