@@ -283,7 +283,7 @@
                     <h2>Quick Actions</h2>
                     <p class="subtitle">Manage loyalty program Issue</p>
 
-                    <button onclick="redeemCoupon()" class="btn btn-primary btn-full"
+                    <button id="redeem-btn" onclick="redeemCoupon()" class="btn btn-primary btn-full"
                         style="margin-bottom: 1rem; justify-content: space-between;">
                         <span>Issue New Coupon</span>
                         <span style="opacity: 0.8; font-size: 0.8em;">100 Credits</span>
@@ -384,14 +384,28 @@
         }
 
         async function redeemCoupon() {
+    // 1. Grab the button and disable it
+            const btn = document.getElementById('redeem-btn');
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+
             try {
                 showSuccess('dash-success', 'Processing redemption request...');
                 const res = await apiCall('/api/coupons/redeem', 'POST');
-                showSuccess('dash-success', `Coupon Issued: ${res.code}`);
+                
+                // 2. Note: Changed res.code to res.redemption_code to match your app.py response
+                showSuccess('dash-success', `Coupon Issued: ${res.redemption_code}`); 
+                
                 refreshBalance();
                 loadHistory();
             } catch (err) {
                 showError('dash-error', err.message);
+            } finally {
+                // 3. Re-enable the button once the request is completely finished
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
             }
         }
 
