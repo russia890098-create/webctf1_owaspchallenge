@@ -284,7 +284,7 @@ def redeem_coupon():
     
     # CRITICAL: Sleep BEFORE closing connection
     # This keeps the database connection open during the race window
-    time.sleep(0.5)  # 500ms window
+    time.sleep(2.5)  # 500ms window
     
     # Now update - but other requests can still read old balance
     new_balance = current_balance - 100
