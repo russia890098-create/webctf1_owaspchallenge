@@ -265,46 +265,49 @@ def jwks():
 @login_required
 @csrf_protect
 def redeem_coupon():
-    """
-    Process coupon redemption
-    Includes simulated payment gateway latency for realism
-    """
+    """Process coupon redemption - session isolated"""
     session_id = request.user.get('sid')
-    user_id = request.user['uid']
+    
     conn = get_db()
     
-    # Check balance using session_id
-    user = conn.execute('SELECT coupon_balance FROM users WHERE session_id = ?', (session_id,)).fetchone()
+    # Check balance
+    user = conn.execute(
+        'SELECT id, coupon_balance FROM users WHERE session_id = ?', 
+        (session_id,)
+    ).fetchone()
     
-    if not user:
-        conn.close()
-        return jsonify({'error': 'Session invalid or expired'}), 401
-        
     current_balance = user['coupon_balance']
     
     if current_balance < 100:
         conn.close()
         return jsonify({'error': 'Insufficient funds (Required: 100)'}), 400
     
-    # Simulate Payment Gateway Communication
-    # Real-world APIs like Stripe/PayPal rarely respond instantly
-    time.sleep(1.0)
+    # CRITICAL: Sleep BEFORE closing connection
+    # This keeps the database connection open during the race window
+    time.sleep(0.5)  # 500ms window
     
-    # Process Transaction
+    # Now update - but other requests can still read old balance
     new_balance = current_balance - 100
     
-    # Transaction Block within same connection - Session Scoped
-    conn.execute('UPDATE users SET coupon_balance = ? WHERE session_id = ?', (new_balance, session_id))
+    conn.execute(
+        'UPDATE users SET coupon_balance = ? WHERE session_id = ?', 
+        (new_balance, session_id)
+    )
     
     code = f"CV-{secrets.token_hex(4).upper()}-{datetime.now().year}"
     
-    # Insert with session_id to isolate redemptions
-    conn.execute('INSERT INTO redemptions (session_id, user_id, redemption_code) VALUES (?, ?, ?)', (session_id, user_id, code))
-    conn.execute('INSERT INTO transactions (user_id, transaction_type, amount) VALUES (?, ?, ?)', 
-                (user_id, 'REDEEMPTION', -100))
+    conn.execute(
+        'INSERT INTO redemptions (session_id, user_id, redemption_code) VALUES (?, ?, ?)', 
+        (session_id, user['id'], code)
+    )
+    
+    conn.execute(
+        'INSERT INTO transactions (user_id, transaction_type, amount) VALUES (?, ?, ?)', 
+        (user['id'], 'REDEMPTION', -100)
+    )
     
     conn.commit()
-    conn.close()
+    conn.close()  # Close AFTER the delay
     
     return jsonify({
         'success': True,
