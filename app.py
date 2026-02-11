@@ -19,7 +19,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_key_only_do_not_use_in_prod')
 # API Key for VIP features (stored securely)
-VIP_API_KEY = os.getenv('API_SECRET_KEY', 'sk_test_demo_key_12345')
+VIP_API_KEY = os.getenv('API_SECRET_KEY', 'XPL8{JWT_HS256_R4C3_C0ND1T10N_PWN3D_2026}')
 
 # Load Signing Keys (RSA-2048)
 try:
