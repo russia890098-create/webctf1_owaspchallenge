@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, send_from_directory
 import jwt
+import time
 import sqlite3
 import hashlib
 import secrets
@@ -287,8 +288,7 @@ def redeem_coupon():
     
     # Simulate Payment Gateway Communication
     # Real-world APIs like Stripe/PayPal rarely respond instantly
-    gateway_latency = random.uniform(0.2, 0.4)  # Bigger window
-    time.sleep(gateway_latency)
+    time.sleep(1.0)
     
     # Process Transaction
     new_balance = current_balance - 100
